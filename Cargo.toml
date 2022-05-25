@@ -1,0 +1,11 @@
+[package]
+name = "ctool"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clap = { version = "3.1.18", features = ["derive"] }
+data-encoding = "2.3.2"
+urlencoding = "2.1.0"
