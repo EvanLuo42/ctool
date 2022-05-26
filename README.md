@@ -12,6 +12,7 @@ Now provided:
 2. Put it into /usr/local/bin/
 
 Or using `cargo build --release` to generate file.
+
 ---
 ### Usage:
 ```
