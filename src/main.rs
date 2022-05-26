@@ -42,9 +42,9 @@ fn main() {
     let kind = matches.value_of("type").unwrap();
 
     match kind {
-        "base64" => crate::encoding::encode_or_decode(action, string, BASE64),
-        "hex" => crate::encoding::encode_or_decode(action, string, HEXLOWER),
-        "url" => crate::encoding::encode_or_decode_url(action, string),
-        _ => crate::error::type_undefined_error_exit(),
+        "base64" => encoding::encode_or_decode(action, string, BASE64),
+        "hex" => encoding::encode_or_decode(action, string, HEXLOWER),
+        "url" => encoding::encode_or_decode_url(action, string),
+        _ => error::type_undefined_error_exit(),
     }
 }
