@@ -1,4 +1,4 @@
-# Encoding-DecodingTool
+# Ctool
 An encoding and decoding CLI tool written in Rust.
 
 Now provided:
