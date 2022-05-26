@@ -18,3 +18,9 @@ Or using `cargo build --release` to generate file.
 ```
 ctool -a [encode | decode] -t [base64 | hex | url] -s <STRING>
 ```
+
+---
+### Acknowledgements：
+- [Clap](https://github.com/clap-rs/clap)
+- [Data-Encoding](https://github.com/ia0/data-encoding)
+- [UrlEncoding](https://github.com/bt/rust_urlencoding)
