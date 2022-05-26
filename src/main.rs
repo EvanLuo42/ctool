@@ -1,48 +1,11 @@
+mod error;
+mod encoding;
+
 extern crate core;
 extern crate urlencoding;
 
 use clap::{Arg, Command};
-use data_encoding::{BASE64, Encoding, HEXLOWER};
-
-fn encode_or_decode(action: &str, string: &str, coder: Encoding) {
-    let action_undefined_error = command().error(
-        clap::ErrorKind::InvalidValue,
-        "The given action is not supported, please enter encode or decode."
-    );
-    match action {
-        "encode" => println!("Result:\n{}", coder.encode(string.as_ref())),
-        "decode" => {
-            match coder.decode(string.as_ref()) {
-                Ok(code) => {
-                    println!("Result:\n{}", code
-                        .iter()
-                        .map(|&c| c as char)
-                        .collect::<String>())
-                },
-                Err(_) => {
-                    let parse_error = command().error(
-                        clap::ErrorKind::InvalidValue,
-                        "The given string is not a base64 or hex."
-                    );
-                    parse_error.exit()
-                }
-            }
-        },
-        _ => action_undefined_error.exit(),
-    }
-}
-
-fn encode_or_decode_url(action: &str, string: &str) {
-    let action_undefined_error = command().error(
-        clap::ErrorKind::InvalidValue,
-        "The given action is not supported, please enter encode or decode."
-    );
-    match action {
-        "encode" => println!("Result:\n{}", urlencoding::encode(string)),
-        "decode" => println!("Result:\n{}", urlencoding::decode(string).unwrap()),
-        _ => action_undefined_error.exit(),
-    }
-}
+use data_encoding::{BASE64, HEXLOWER};
 
 fn command() -> Command<'static> {
     Command::new("ctool")
@@ -74,19 +37,14 @@ fn main() {
         .try_get_matches_from(std::env::args_os())
         .unwrap_or_else(|e| e.exit());
 
-    let type_undefined_error = command().error(
-        clap::ErrorKind::InvalidValue,
-        "The given type is not supported, please enter base64, hex, etc."
-    );
-
     let action = matches.value_of("action").unwrap();
     let string = matches.value_of("string").unwrap();
     let kind = matches.value_of("type").unwrap();
 
     match kind {
-        "base64" => encode_or_decode(action, string, BASE64),
-        "hex" => encode_or_decode(action, string, HEXLOWER),
-        "url" => encode_or_decode_url(action, string),
-        _ => type_undefined_error.exit(),
+        "base64" => crate::encoding::encode_or_decode(action, string, BASE64),
+        "hex" => crate::encoding::encode_or_decode(action, string, HEXLOWER),
+        "url" => crate::encoding::encode_or_decode_url(action, string),
+        _ => crate::error::type_undefined_error_exit(),
     }
 }
