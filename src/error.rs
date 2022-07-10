@@ -1,25 +1,15 @@
-use crate::command;
-
-pub fn action_undefined_error_exit() {
-    let action_undefined_error = command().error(
-        clap::ErrorKind::InvalidValue,
-        "The given action is not supported, please enter encode or decode."
-    );
-    action_undefined_error.exit()
+use std::fmt::Display;
+#[derive(Debug)]
+pub enum Error {
+    ParseErrorBase64,
+    ParseErrorBaseHex,
 }
 
-pub fn parse_error_exit() {
-    let parse_error = command().error(
-        clap::ErrorKind::InvalidValue,
-        "The given string is not a base64 or hex."
-    );
-    parse_error.exit()
-}
-
-pub fn type_undefined_error_exit() {
-    let type_undefined_error = command().error(
-        clap::ErrorKind::InvalidValue,
-        "The given type is not supported, please enter base64, hex, etc."
-    );
-    type_undefined_error.exit()
+impl Display for Error {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Error::ParseErrorBase64 => f.write_str("The given string is not a base64."),
+            Error::ParseErrorBaseHex => f.write_str("The given string is not a hex."),
+        }
+    }
 }

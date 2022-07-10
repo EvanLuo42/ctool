@@ -1,50 +1,59 @@
+#[deny(legacy_derive_helpers)]
 mod error;
-mod encoding;
 
-extern crate core;
-extern crate urlencoding;
+use std::io::Read;
 
-use clap::{Arg, Command};
-use data_encoding::{BASE64, HEXLOWER};
+use clap::Parser;
 
-fn command() -> Command<'static> {
-    Command::new("ctool")
+#[derive(Debug, Parser)]
+#[clap(
+    version = clap::crate_version!(),
+    author = clap::crate_authors!("\n"),
+    about = "A union tool covert base64, url, etc.",
+)]
+struct Opt {
+    #[clap(
+        long,
+        short = 'a',
+        value_enum,
+        help = "Action decide whether to encode or decode.",
+        required = true
+    )]
+    action: Action,
+    #[clap(long, short = 't', value_enum, help = "Code type.", required = true)]
+    ty: Ty,
+    #[clap(last = true, help = "The string waiting for decode or encode.")]
+    string: Option<String>,
 }
 
-fn main() {
-    let matches = command()
-        .version("0.1.0")
-        .author("Evan Luo <ziyun.luo@icloud.com>")
-        .about("A union tool covert base64, url, etc.")
-        .arg(Arg::new("action")
-            .short('a')
-            .value_name("ACTION")
-            .help("Action decide whether to encode or decode.")
-            .required(true)
-        )
-        .arg(Arg::new("type")
-            .short('t')
-            .value_name("TYPE")
-            .help("Code type.")
-            .required(true)
-        )
-        .arg(Arg::new("string")
-            .short('s')
-            .value_name("STRING")
-            .help("The string waiting for decode or encode.")
-            .required(true)
-        )
-        .try_get_matches_from(std::env::args_os())
-        .unwrap_or_else(|e| e.exit());
+#[derive(Debug, clap::ValueEnum, PartialEq, Eq, Clone, Copy)]
+enum Action {
+    Encode,
+    Decode,
+}
 
-    let action = matches.value_of("action").unwrap();
-    let string = matches.value_of("string").unwrap();
-    let kind = matches.value_of("type").unwrap();
+#[derive(Debug, clap::ValueEnum, PartialEq, Eq, Clone, Copy)]
+enum Ty {
+    Base64,
+    Hex,
+    Url,
+}
 
-    match kind {
-        "base64" => encoding::encode_or_decode(action, string, BASE64),
-        "hex" => encoding::encode_or_decode(action, string, HEXLOWER),
-        "url" => encoding::encode_or_decode_url(action, string),
-        _ => error::type_undefined_error_exit(),
+fn strip(s: String) -> String {
+    // remove bom
+    let s = s.replace('\u{feff}', "");
+    // trim end
+    s.trim_end().to_string()
+}
+
+fn main() -> anyhow::Result<()> {
+    let mut args: Opt = Opt::parse();
+    let mut buffer = String::new();
+    std::io::stdin().read_to_string(&mut buffer)?;
+    if args.string == None {
+        args.string = Some(strip(buffer))
     }
+    println!("{:#?}", args);
+    // code to do with args
+    Ok(())
 }
