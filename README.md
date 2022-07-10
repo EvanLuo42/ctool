@@ -16,7 +16,9 @@ Or using `cargo build --release` to generate file.
 ---
 ### Usage:
 ```
-ctool -a [encode | decode] -t [base64 | hex | url] -s <STRING>
+ctool -a [encode | decode] -t [base64 | hex | url] -- <STRING>
+# or
+echo blablabla | ctool -a ... -t ...
 ```
 
 ---
