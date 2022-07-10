@@ -1,9 +1,24 @@
+#![doc = include_str!("../README.md")]
+
 #[deny(legacy_derive_helpers)]
 mod error;
 
 use std::io::Read;
 
 use clap::Parser;
+
+#[derive(Debug, clap::ValueEnum, PartialEq, Eq, Clone, Copy)]
+enum Action {
+    Encode,
+    Decode,
+}
+
+#[derive(Debug, clap::ValueEnum, PartialEq, Eq, Clone, Copy)]
+enum Ty {
+    Base64,
+    Hex,
+    Url,
+}
 
 #[derive(Debug, Parser)]
 #[clap(
@@ -26,17 +41,30 @@ struct Opt {
     string: Option<String>,
 }
 
-#[derive(Debug, clap::ValueEnum, PartialEq, Eq, Clone, Copy)]
-enum Action {
-    Encode,
-    Decode,
-}
+impl Opt {
+    /// do the action
+    pub fn do_action(self) -> anyhow::Result<String> {
+        match self.action {
+            Action::Encode => self.encode(),
+            Action::Decode => self.decode(),
+        }
+    }
 
-#[derive(Debug, clap::ValueEnum, PartialEq, Eq, Clone, Copy)]
-enum Ty {
-    Base64,
-    Hex,
-    Url,
+    fn encode(self) -> anyhow::Result<String> {
+        match self.ty {
+            Ty::Base64 => Err(anyhow::Error::from(error::Error::Todo)),
+            Ty::Hex => Err(anyhow::Error::from(error::Error::Todo)),
+            Ty::Url => Err(anyhow::Error::from(error::Error::Todo)),
+        }
+    }
+
+    fn decode(self) -> anyhow::Result<String> {
+        match self.ty {
+            Ty::Base64 => Err(anyhow::Error::from(error::Error::Todo)),
+            Ty::Hex => Err(anyhow::Error::from(error::Error::Todo)),
+            Ty::Url => Err(anyhow::Error::from(error::Error::Todo)),
+        }
+    }
 }
 
 fn strip(s: String) -> String {
@@ -49,11 +77,13 @@ fn strip(s: String) -> String {
 fn main() -> anyhow::Result<()> {
     let mut args: Opt = Opt::parse();
     let mut buffer = String::new();
-    std::io::stdin().read_to_string(&mut buffer)?;
     if args.string == None {
+        std::io::stdin().read_to_string(&mut buffer)?;
         args.string = Some(strip(buffer))
     }
-    println!("{:#?}", args);
+
+    // println!("{:#?}", args);
     // code to do with args
+    println!("{}", args.do_action()?);
     Ok(())
 }
